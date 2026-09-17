@@ -1,0 +1,14 @@
+langchain
+langchain-community
+chromadb
+sentence-transformers
+feedparser
+
+fastapi
+uvicorn[standard]
+pydantic
+transformers
+torch
+sentencepiece
+yfinance
+spacy
