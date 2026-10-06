@@ -1,0 +1,24 @@
+line-length = 88
+
+exclude = [
+    ".venv",
+    "__pycache__",
+    "frontend",
+    ".pytest_cache",
+]
+
+[lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+]
+
+ignore = [
+    "E501",
+]
+
+[format]
+quote-style = "double"
+indent-style = "space"

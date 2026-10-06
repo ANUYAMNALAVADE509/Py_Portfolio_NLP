@@ -1,0 +1,82 @@
+# ================================
+# PYTHON
+# ================================
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ================================
+# JUPYTER
+# ================================
+.ipynb_checkpoints/
+
+# ================================
+# NODE / REACT / VITE
+# ================================
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+build/
+frontend/build/
+.vite/
+
+# ================================
+# ENVIRONMENT / SECRETS
+# ================================
+.env
+.env.*
+!.env.example
+
+# Firebase / credentials
+serviceAccountKey.json
+firebase-service-account.json
+*.pem
+
+# ================================
+# PYCHARM / IDE
+# ================================
+.idea/
+
+# ================================
+# VS CODE
+# ================================
+.vscode/
+
+# ================================
+# OS
+# ================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ================================
+# LOGS / TEMPORARY FILES
+# ================================
+*.log
+*.tmp
+*.temp
+*.swp
+
+# ================================
+# CACHE
+# ================================
+.cache/
+
+# ================================
+# GENERATED / DUPLICATE PROJECT ARTIFACTS
+# ================================
+notebooks/models/
+backend/models/.ipynb_checkpoints/
+
+
+# Duplicate frontend assets
+/public/icons/
+

@@ -3,7 +3,6 @@ langchain-community
 chromadb
 sentence-transformers
 feedparser
-
 fastapi
 uvicorn[standard]
 pydantic
@@ -12,3 +11,5 @@ torch
 sentencepiece
 yfinance
 spacy
+httpx
+python-multipart

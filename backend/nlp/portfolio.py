@@ -1,6 +1,5 @@
 from collections import Counter
-from typing import Any, Dict, List
-
+from typing import Any
 
 # ============================================================
 # RELEVANCE WEIGHTS
@@ -61,7 +60,7 @@ def safe_float(value: Any, default: float = 0.0) -> float:
 # SAFE ARTICLE LIST
 # ============================================================
 
-def safe_articles(articles: Any) -> List[Dict[str, Any]]:
+def safe_articles(articles: Any) -> list[dict[str, Any]]:
     """
     Ensure that the supplied article collection is a clean
     list of dictionaries.

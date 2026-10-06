@@ -1,0 +1,491 @@
+/* =========================================================
+   QUANTRISK AI — WALKTHROUGH / CAROUSEL
+   File:
+   frontend/src/components/Walkthrough.css
+
+   Used by:
+   frontend/src/components/Walkthrough.jsx
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   Main walkthrough section
+   --------------------------------------------------------- */
+
+.walkthrough {
+  width: 100%;
+  padding: 28px 0 60px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+
+/* ---------------------------------------------------------
+   Main walkthrough card
+   --------------------------------------------------------- */
+
+.walkthrough-content {
+  position: relative;
+
+  width: min(100%, 1180px);
+  min-height: 390px;
+
+  margin: 0 auto;
+  padding: 64px 72px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 26px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.055),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.2);
+
+  overflow: hidden;
+}
+
+
+/* ---------------------------------------------------------
+   Decorative glow
+   --------------------------------------------------------- */
+
+.walkthrough-content::before {
+  content: "";
+
+  position: absolute;
+
+  width: 360px;
+  height: 360px;
+
+  right: -180px;
+  top: -180px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.055),
+      transparent 68%
+    );
+
+  pointer-events: none;
+}
+
+
+/* ---------------------------------------------------------
+   Eyebrow / small heading
+   --------------------------------------------------------- */
+
+.walkthrough .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  position: relative;
+  z-index: 1;
+
+  margin: 0 0 24px;
+
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+
+  color: rgba(255, 255, 255, 0.48);
+}
+
+
+/* Small dot before eyebrow text */
+
+.walkthrough .eyebrow::before {
+  content: "";
+
+  flex: 0 0 auto;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: currentColor;
+}
+
+
+/* ---------------------------------------------------------
+   Slide number
+   --------------------------------------------------------- */
+
+.walkthrough .slide-number {
+  display: block;
+
+  position: relative;
+  z-index: 1;
+
+  margin: 0 0 12px;
+
+  font-size: 14px;
+  line-height: 1.4;
+
+  letter-spacing: 0.12em;
+
+  color: rgba(255, 255, 255, 0.35);
+}
+
+
+/* ---------------------------------------------------------
+   Slide title
+   --------------------------------------------------------- */
+
+.walkthrough h2 {
+  position: relative;
+  z-index: 1;
+
+  max-width: 780px;
+
+  margin: 0 0 20px;
+
+  font-size: clamp(
+    34px,
+    5vw,
+    62px
+  );
+
+  line-height: 1.03;
+
+  letter-spacing: -0.045em;
+
+  font-weight: 600;
+
+  color: #ffffff;
+
+  overflow-wrap: break-word;
+}
+
+
+/* ---------------------------------------------------------
+   Slide description
+   --------------------------------------------------------- */
+
+.walkthrough p {
+  position: relative;
+  z-index: 1;
+
+  max-width: 650px;
+
+  margin: 0;
+
+  font-size: 16px;
+  line-height: 1.75;
+
+  color: rgba(255, 255, 255, 0.61);
+
+  overflow-wrap: break-word;
+}
+
+
+/* ---------------------------------------------------------
+   Carousel controls
+   --------------------------------------------------------- */
+
+.carousel-controls {
+  position: relative;
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  width: fit-content;
+
+  margin-top: 42px;
+}
+
+
+/* ---------------------------------------------------------
+   Previous / Next circular buttons
+   --------------------------------------------------------- */
+
+.carousel-controls > button {
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.13);
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  color: rgba(255, 255, 255, 0.82);
+
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+
+/* Hover */
+
+.carousel-controls > button:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(255, 255, 255, 0.09);
+
+  border-color:
+    rgba(255, 255, 255, 0.28);
+}
+
+
+/* Press */
+
+.carousel-controls > button:active {
+  transform: scale(0.97);
+}
+
+
+/* Keyboard focus */
+
+.carousel-controls > button:focus-visible {
+  outline:
+    2px solid
+    rgba(255, 255, 255, 0.75);
+
+  outline-offset: 3px;
+}
+
+
+/* ---------------------------------------------------------
+   Carousel dots container
+   --------------------------------------------------------- */
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+
+/* ---------------------------------------------------------
+   Individual carousel dot
+
+   These are BUTTON elements in Walkthrough.jsx.
+   --------------------------------------------------------- */
+
+.carousel-dots .dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 auto;
+
+  display: block;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.22);
+
+  box-shadow: none;
+
+  cursor: pointer;
+
+  appearance: none;
+
+  transition:
+    width 240ms ease,
+    background 240ms ease,
+    transform 180ms ease;
+}
+
+
+/* Active dot */
+
+.carousel-dots .dot.active {
+  width: 28px;
+
+  background:
+    rgba(255, 255, 255, 0.9);
+}
+
+
+/* Hover */
+
+.carousel-dots .dot:hover {
+  background:
+    rgba(255, 255, 255, 0.65);
+}
+
+
+/* Small press feedback */
+
+.carousel-dots .dot:active {
+  transform: scale(0.92);
+}
+
+
+/* Keyboard focus */
+
+.carousel-dots .dot:focus-visible {
+  outline:
+    2px solid
+    rgba(255, 255, 255, 0.75);
+
+  outline-offset: 3px;
+}
+
+
+/* ---------------------------------------------------------
+   Tablet
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .walkthrough-content {
+    width: 100%;
+
+    padding: 54px 46px;
+
+    border-radius: 24px;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   Mobile
+   --------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .walkthrough {
+    padding: 20px 0 40px;
+  }
+
+  .walkthrough-content {
+    min-height: 350px;
+
+    padding: 48px 26px;
+
+    border-radius: 20px;
+  }
+
+  .walkthrough h2 {
+    font-size: 36px;
+
+    letter-spacing: -0.035em;
+  }
+
+  .walkthrough p {
+    font-size: 14px;
+
+    line-height: 1.7;
+  }
+
+  .carousel-controls {
+    margin-top: 32px;
+
+    gap: 14px;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   Very small mobile screens
+   --------------------------------------------------------- */
+
+@media (max-width: 420px) {
+  .walkthrough-content {
+    min-height: 330px;
+
+    padding: 38px 20px;
+
+    border-radius: 18px;
+  }
+
+  .walkthrough .eyebrow {
+    margin-bottom: 20px;
+
+    font-size: 10px;
+
+    letter-spacing: 0.13em;
+  }
+
+  .walkthrough .slide-number {
+    font-size: 13px;
+  }
+
+  .walkthrough h2 {
+    font-size: 30px;
+
+    line-height: 1.08;
+  }
+
+  .walkthrough p {
+    font-size: 13px;
+  }
+
+  .carousel-controls {
+    gap: 12px;
+
+    margin-top: 28px;
+  }
+
+  .carousel-controls > button {
+    width: 40px;
+    height: 40px;
+
+    font-size: 16px;
+  }
+
+  .carousel-dots {
+    gap: 6px;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   Reduced motion
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .walkthrough *,
+  .walkthrough *::before,
+  .walkthrough *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

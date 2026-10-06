@@ -1,0 +1,789 @@
+
+/* =====================================
+   QUANTRISK AI - MERGED SIDEBAR
+   Compatible with both JSX structures
+===================================== */
+
+/* =====================================
+   SIDEBAR CONTAINER
+===================================== */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: 260px;
+  min-width: 260px;
+  height: 100vh;
+  height: 100dvh;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+
+  padding: 0;
+
+  background: #101827;
+  color: #f8fafc;
+  border-right: 1px solid #263244;
+
+  overflow: hidden;
+  z-index: 1000;
+}
+
+
+/* =====================================
+   BRAND / HEADER
+   Supports .brand and .sidebar-brand
+===================================== */
+
+.brand,
+.sidebar-brand {
+  flex-shrink: 0;
+}
+
+/* Original brand structure */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 24px 16px 30px;
+}
+
+/* New brand structure */
+
+.sidebar-brand {
+  padding: 24px 20px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: inherit;
+  text-decoration: none;
+  min-width: 0;
+}
+
+/* Brand logo: SVG, PNG, or fallback */
+
+.brand-logo {
+  display: block;
+
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  flex: 0 0 42px;
+
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Brand text: vertical original layout */
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* New horizontal brand layout */
+
+.brand-link .brand-text {
+  align-items: baseline;
+  gap: 5px;
+}
+
+/* Brand name */
+
+.brand-name {
+  color: #ffffff;
+
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1.3;
+}
+
+/* Subtitle */
+
+.brand-subtitle {
+  color: #94a3b8;
+
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+
+  white-space: nowrap;
+}
+
+/* New structure's subtitle color and sizing */
+
+.brand-link .brand-subtitle {
+  color: #60a5fa;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+
+/* =====================================
+   FALLBACK ELEMENTS
+===================================== */
+
+.icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Brand logo fallback */
+
+.brand-logo-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+
+/* =====================================
+   NAVIGATION CONTAINER
+===================================== */
+
+.sidebar-menu {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Menu heading */
+
+.menu-heading {
+  flex-shrink: 0;
+
+  margin: 4px 10px 12px;
+  padding: 0;
+
+  color: #718096;
+
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+
+/* =====================================
+   NAVIGATION MENU
+===================================== */
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  width: 100%;
+  min-height: 0;
+  flex: 1 1 auto;
+
+  box-sizing: border-box;
+
+  padding: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #35445a transparent;
+}
+
+/* New structure's menu padding */
+
+.sidebar-menu .menu {
+  padding: 8px 12px;
+}
+
+/* Scrollbar */
+
+.menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.menu::-webkit-scrollbar-thumb {
+  background: #35445a;
+  border-radius: 10px;
+}
+
+
+/* =====================================
+   NAVIGATION ITEMS
+===================================== */
+
+.menu-item {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  min-height: 46px;
+
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  margin: 0;
+  padding: 0 12px;
+
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  color: #aab6c8;
+  background: transparent;
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* New structure's spacing */
+
+.sidebar-menu .menu-item {
+  min-height: 48px;
+  margin: 4px 0;
+  padding: 0 13px;
+  gap: 13px;
+}
+
+/* Hover */
+
+.menu-item:hover {
+  background: #1b293c;
+  color: #ffffff;
+}
+
+/* Active route */
+
+.menu-item.active {
+  background: #1d3554;
+  border-color: #29496c;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* New structure's active treatment */
+
+.sidebar-menu .menu-item.active {
+  background: #203b60;
+  border-color: transparent;
+  color: #ffffff;
+}
+
+
+/* =====================================
+   NAVIGATION ICONS
+   Supports PNG and SVG image files
+===================================== */
+
+.menu-icon {
+  display: block;
+
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  flex: 0 0 22px;
+
+  object-fit: contain;
+  object-position: center;
+
+  opacity: 0.9;
+  visibility: visible;
+}
+
+.menu-item.active .menu-icon {
+  opacity: 1;
+}
+
+/* Icon fallback */
+
+.menu-icon-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  flex: 0 0 22px;
+
+  color: #b9c8da;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.menu-item.active .menu-icon-fallback {
+  color: #ffffff;
+}
+
+
+/* =====================================
+   MENU LABEL
+===================================== */
+
+.menu-label {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  color: inherit;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =====================================
+   ACTIVE INDICATORS
+   Supports both indicator structures
+===================================== */
+
+/* Original small dot image */
+
+.menu-dot {
+  display: block;
+
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  flex: 0 0 7px;
+
+  margin-left: auto;
+
+  object-fit: contain;
+  object-position: center;
+
+  opacity: 0.85;
+}
+
+.menu-item.active .menu-dot {
+  opacity: 1;
+}
+
+/* Original dot fallback */
+
+.menu-dot-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 7px;
+  height: 7px;
+  min-width: 7px;
+  flex: 0 0 7px;
+
+  margin-left: auto;
+
+  color: #65a5ff;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* New vertical active indicator */
+
+.menu-active-indicator {
+  position: absolute;
+  top: 50%;
+  right: 0;
+
+  width: 4px;
+  height: 23px;
+
+  transform: translateY(-50%);
+
+  border-radius: 4px 0 0 4px;
+  background: #60a5fa;
+}
+
+
+/* =====================================
+   FOOTER
+   Supports both footer structures
+===================================== */
+
+.sidebar-footer {
+  width: 100%;
+
+  margin-top: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Original footer divider */
+
+.footer-line {
+  width: 100%;
+  height: 1px;
+
+  margin: 20px 0 18px;
+
+  background: #293548;
+}
+
+/* New footer border */
+
+.sidebar-footer {
+  padding: 15px 16px 18px;
+  border-top: 1px solid #263346;
+}
+
+/* When the original divider is used,
+   avoid an additional footer border */
+
+.sidebar-footer:has(.footer-line) {
+  border-top: 0;
+  padding-top: 0;
+}
+
+
+/* =====================================
+   SYSTEM STATUS
+   Supports both status structures
+===================================== */
+
+.system-status,
+.sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #aab6c8;
+}
+
+/* Original status layout */
+
+.system-status {
+  padding: 0 8px 18px;
+}
+
+/* New status layout */
+
+.sidebar-status {
+  gap: 9px;
+  padding: 4px 5px 16px;
+
+  font-size: 12px;
+}
+
+/* Status dot image */
+
+.status-dot {
+  display: block;
+
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  flex: 0 0 9px;
+
+  object-fit: contain;
+  object-position: center;
+}
+
+/* New status dot sizing */
+
+.sidebar-status .status-dot {
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  flex-basis: 10px;
+}
+
+/* Status fallback */
+
+.status-dot-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 9px;
+  height: 9px;
+  min-width: 9px;
+  flex: 0 0 9px;
+
+  color: #22c55e;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Original status text */
+
+.system-copy {
+  min-width: 0;
+}
+
+.system-title {
+  color: #e2e8f0;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.system-name {
+  margin-top: 3px;
+
+  color: #8492a6;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+
+/* =====================================
+   LOGOUT BUTTONS
+   Supports .logout-btn and .logout-button
+===================================== */
+
+.logout-btn,
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  width: 100%;
+  min-height: 42px;
+
+  box-sizing: border-box;
+  padding: 0 12px;
+
+  border: 1px solid #334155;
+  border-radius: 9px;
+
+  background: transparent;
+  color: #cbd5e1;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* New button sizing */
+
+.logout-button {
+  min-height: 43px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Original logout hover */
+
+.logout-btn:hover:not(:disabled) {
+  background: #35232b;
+  border-color: #85404b;
+  color: #fda4af;
+}
+
+/* New logout hover */
+
+.logout-button:hover:not(:disabled) {
+  background: #263346;
+  color: #ffffff;
+}
+
+/* Disabled state */
+
+.logout-btn:disabled,
+.logout-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Logout icon */
+
+.logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  font-size: 19px;
+  line-height: 1;
+}
+
+.logout-button .logout-icon {
+  font-size: 20px;
+}
+
+
+/* =====================================
+   KEYBOARD ACCESSIBILITY
+===================================== */
+
+.menu-item:focus-visible,
+.logout-btn:focus-visible,
+.logout-button:focus-visible,
+.brand-link:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+
+/* =====================================
+   RESPONSIVE WIDTH
+   Keep in sync with App.css .app-main
+===================================== */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+
+    padding: 0;
+  }
+
+  .brand {
+    padding: 18px 12px 14px;
+  }
+
+  .sidebar-brand {
+    padding: 20px 15px;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .brand-link .brand-name {
+    font-size: 16px;
+  }
+
+  .menu {
+    padding: 8px;
+  }
+
+  .menu-item {
+    gap: 10px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .sidebar-menu .menu-item {
+    gap: 10px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .sidebar-footer {
+    padding: 12px 12px 14px;
+  }
+}
+
+
+/* =====================================
+   SHORT SCREENS
+===================================== */
+
+@media (max-height: 520px) {
+  .sidebar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .brand {
+    padding-top: 12px;
+    padding-bottom: 14px;
+  }
+
+  .sidebar-brand {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .footer-line {
+    margin: 10px 0;
+  }
+
+  .system-status {
+    padding-bottom: 10px;
+  }
+
+  .sidebar-status {
+    padding-bottom: 10px;
+  }
+
+  .menu {
+    gap: 4px;
+  }
+
+  .menu-item {
+    min-height: 40px;
+  }
+
+  .sidebar-menu .menu-item {
+    min-height: 40px;
+    margin: 2px 0;
+  }
+
+  .sidebar-footer {
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+}
+
+
+/* =====================================
+   REDUCED MOTION
+===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item,
+  .logout-btn,
+  .logout-button {
+    transition: none;
+  }
+}

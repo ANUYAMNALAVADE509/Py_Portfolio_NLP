@@ -1,0 +1,5 @@
+Case,Date,Stock,Actual_Volatility,Predicted_Volatility,Risk_Threshold,Risk_Class,Absolute_Error
+Highest predicted volatility,2025-01-22,ETERNAL,0.03433756,0.034436785,0.02128586359322071,High Risk,9.922311e-05
+Lowest predicted volatility,2025-11-12,MARUTI,0.009648146,0.004592847,0.02128586359322071,Low Risk,0.005055299
+Largest prediction error,2025-03-06,INDUSINDBK,0.06713107,0.01662364,0.02128586359322071,Low Risk,0.050507434
+Closest to risk threshold,2025-02-10,BEL,0.02536751,0.021290844,0.02128586359322071,High Risk,0.0040766653

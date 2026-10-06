@@ -1,7 +1,13 @@
-import yfinance as yf
-
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from email.utils import parsedate_to_datetime
+from html import unescape
+from html.parser import HTMLParser
+from typing import Any
+from urllib.parse import quote_plus
+from urllib.request import Request, urlopen
+import xml.etree.ElementTree as ET
+
+from backend.news.company_map import get_company_name
 
 
 # ============================================================
@@ -12,6 +18,20 @@ DEFAULT_COUNT = 10
 MIN_COUNT = 1
 MAX_COUNT = 50
 
+GOOGLE_NEWS_RSS_URL = (
+    "https://news.google.com/rss/search"
+)
+
+GOOGLE_NEWS_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 "
+        "(Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 "
+        "(KHTML, like Gecko) "
+        "Chrome/140.0 Safari/537.36"
+    )
+}
+
 
 # ============================================================
 # SYMBOL NORMALIZATION
@@ -19,13 +39,16 @@ MAX_COUNT = 50
 
 def normalize_symbol(symbol: str) -> str:
     """
-    Convert common Indian stock symbols into Yahoo Finance format.
+    Convert common Indian stock symbols into a consistent
+    QuantRisk AI format.
 
     Examples:
-        RELIANCE      -> RELIANCE.NS
-        TCS           -> TCS.NS
-        INFY          -> INFY.NS
-        RELIANCE.NS   -> RELIANCE.NS
+
+        RELIANCE       -> RELIANCE.NS
+        TCS            -> TCS.NS
+        INFY           -> INFY.NS
+        RELIANCE.NS    -> RELIANCE.NS
+        RELIANCE.BSE   -> RELIANCE.BSE
     """
 
     if not symbol:
@@ -36,11 +59,9 @@ def normalize_symbol(symbol: str) -> str:
     if not symbol:
         return ""
 
-    # Already contains an exchange suffix
     if "." in symbol:
         return symbol
 
-    # Default Indian exchange
     return f"{symbol}.NS"
 
 
@@ -63,172 +84,134 @@ def clean_text(value: Any) -> str:
 
 
 # ============================================================
-# URL EXTRACTION
+# HTML TEXT CLEANING
 # ============================================================
 
-def extract_url(content: Dict[str, Any]) -> str:
+class HTMLTextParser(HTMLParser):
     """
-    Extract article URL from different Yahoo Finance
-    news response structures.
+    Small HTML parser used to remove HTML tags from RSS
+    descriptions while keeping their readable text.
     """
 
-    # --------------------------------------------------------
-    # canonicalUrl
-    # --------------------------------------------------------
+    def __init__(self):
+        super().__init__()
+        self.parts = []
 
-    canonical_url = content.get("canonicalUrl")
+    def handle_data(self, data):
+        self.parts.append(data)
 
-    if isinstance(canonical_url, dict):
+    def get_text(self):
+        return " ".join(self.parts)
 
-        url = clean_text(
-            canonical_url.get("url")
+
+def strip_html(value: Any) -> str:
+    """
+    Convert HTML-containing RSS text into readable plain text.
+    """
+
+    text = clean_text(value)
+
+    if not text:
+        return ""
+
+    try:
+        parser = HTMLTextParser()
+        parser.feed(text)
+
+        cleaned = parser.get_text()
+
+        return " ".join(
+            unescape(cleaned).split()
         )
 
-        if url:
-            return url
-
-    elif isinstance(canonical_url, str):
-
-        url = clean_text(canonical_url)
-
-        if url:
-            return url
-
-    # --------------------------------------------------------
-    # clickThroughUrl
-    # --------------------------------------------------------
-
-    click_url = content.get("clickThroughUrl")
-
-    if isinstance(click_url, dict):
-
-        url = clean_text(
-            click_url.get("url")
+    except Exception:
+        return " ".join(
+            unescape(text).split()
         )
 
-        if url:
-            return url
 
-    elif isinstance(click_url, str):
+# ============================================================
+# SYMBOL SEARCH QUERY
+# ============================================================
 
-        url = clean_text(click_url)
+def get_search_queries(symbol: str) -> list[str]:
+    """
+    Build Google News search queries for an Indian stock.
 
-        if url:
-            return url
+    The company name is preferred because news publishers
+    generally use the company name rather than the Yahoo
+    Finance ticker symbol.
+    """
+
+    normalized_symbol = normalize_symbol(symbol)
+
+    if not normalized_symbol:
+        return []
+
+    base_symbol = normalized_symbol.split(".")[0]
+
+    queries = []
 
     # --------------------------------------------------------
-    # Direct URL
+    # Company name from the project's existing company map.
     # --------------------------------------------------------
 
-    direct_url = clean_text(
-        content.get("url")
+    try:
+
+        company_name = clean_text(
+            get_company_name(
+                normalized_symbol
+            )
+        )
+
+        if company_name:
+            queries.append(
+                f'"{company_name}" stock'
+            )
+
+            queries.append(
+                f'"{company_name}" shares'
+            )
+
+    except Exception as error:
+
+        print(
+            f"[NEWS COLLECTOR] "
+            f"Company-name lookup failed for "
+            f"{normalized_symbol}: {error}"
+        )
+
+    # --------------------------------------------------------
+    # Ticker-based fallback.
+    # --------------------------------------------------------
+
+    queries.append(
+        f'"{base_symbol}" stock India'
     )
 
-    if direct_url:
-        return direct_url
+    # --------------------------------------------------------
+    # Remove duplicate queries while preserving order.
+    # --------------------------------------------------------
 
-    return ""
+    unique_queries = []
 
+    seen = set()
 
-# ============================================================
-# SOURCE EXTRACTION
-# ============================================================
+    for query in queries:
 
-def extract_source(content: Dict[str, Any]) -> str:
-    """
-    Extract the news provider/source name.
-    """
+        key = query.strip().lower()
 
-    provider = content.get("provider")
-
-    if isinstance(provider, dict):
-
-        source = clean_text(
-            provider.get("displayName")
-        )
-
-        if source:
-            return source
-
-        source = clean_text(
-            provider.get("name")
-        )
-
-        if source:
-            return source
-
-    elif isinstance(provider, str):
-
-        source = clean_text(provider)
-
-        if source:
-            return source
-
-    # Some Yahoo responses may contain publisher
-    publisher = clean_text(
-        content.get("publisher")
-    )
-
-    if publisher:
-        return publisher
-
-    return ""
-
-
-# ============================================================
-# PUBLICATION DATE EXTRACTION
-# ============================================================
-
-def extract_published_at(
-    item: Dict[str, Any],
-    content: Dict[str, Any]
-) -> str:
-    """
-    Extract publication timestamp from Yahoo Finance news.
-    """
-
-    possible_values = [
-
-        content.get("pubDate"),
-
-        content.get("publishedAt"),
-
-        content.get("publishTime"),
-
-        item.get("pubDate"),
-
-        item.get("publishedAt"),
-
-        item.get("providerPublishTime")
-    ]
-
-    for value in possible_values:
-
-        if value is None:
+        if not key:
             continue
 
-        # Unix timestamp
-        if isinstance(value, (int, float)):
+        if key in seen:
+            continue
 
-            try:
+        seen.add(key)
 
-                dt = datetime.fromtimestamp(
-                    value,
-                    tz=timezone.utc
-                )
+        unique_queries.append(query)
 
-                return dt.isoformat()
-
-            except Exception:
-
-                continue
-
-        value = clean_text(value)
-
-        if value:
-            return value
-
-    return ""
+    return unique_queries
 
 
 # ============================================================
@@ -239,20 +222,50 @@ def parse_datetime(
     published_at: str
 ):
     """
-    Convert different timestamp formats into
-    timezone-aware datetime.
+    Convert common RSS/ISO timestamp formats into a
+    timezone-aware UTC datetime.
     """
 
     if not published_at:
         return None
 
+    value = clean_text(
+        published_at
+    )
+
+    if not value:
+        return None
+
+    # --------------------------------------------------------
+    # RFC 2822 / RSS dates
+    # --------------------------------------------------------
+
     try:
 
-        value = published_at.strip()
+        parsed_time = parsedate_to_datetime(
+            value
+        )
 
-        # ----------------------------------------------------
-        # ISO 8601
-        # ----------------------------------------------------
+        if parsed_time is not None:
+
+            if parsed_time.tzinfo is None:
+
+                parsed_time = parsed_time.replace(
+                    tzinfo=timezone.utc
+                )
+
+            return parsed_time.astimezone(
+                timezone.utc
+            )
+
+    except Exception:
+        pass
+
+    # --------------------------------------------------------
+    # ISO 8601
+    # --------------------------------------------------------
+
+    try:
 
         normalized_value = value.replace(
             "Z",
@@ -262,10 +275,6 @@ def parse_datetime(
         parsed_time = datetime.fromisoformat(
             normalized_value
         )
-
-        # ----------------------------------------------------
-        # Make timezone-aware
-        # ----------------------------------------------------
 
         if parsed_time.tzinfo is None:
 
@@ -278,18 +287,13 @@ def parse_datetime(
         )
 
     except Exception:
-
         pass
 
     # --------------------------------------------------------
-    # Common RSS-style date format
+    # Additional common formats
     # --------------------------------------------------------
 
     common_formats = [
-
-        "%a, %d %b %Y %H:%M:%S %z",
-
-        "%a, %d %b %Y %H:%M:%S GMT",
 
         "%Y-%m-%d %H:%M:%S",
 
@@ -301,22 +305,17 @@ def parse_datetime(
         try:
 
             parsed_time = datetime.strptime(
-                published_at,
+                value,
                 date_format
             )
 
-            if parsed_time.tzinfo is None:
-
-                parsed_time = parsed_time.replace(
-                    tzinfo=timezone.utc
-                )
-
-            return parsed_time.astimezone(
-                timezone.utc
+            parsed_time = parsed_time.replace(
+                tzinfo=timezone.utc
             )
 
-        except Exception:
+            return parsed_time
 
+        except Exception:
             continue
 
     return None
@@ -328,17 +327,15 @@ def parse_datetime(
 
 def calculate_freshness(
     published_at: str
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
-    Calculate how recent a news article is.
+    Calculate how recent an article is.
 
-    Categories:
-
-        <= 24 hours       -> fresh
-        <= 7 days         -> recent
-        <= 30 days        -> older
-        > 30 days         -> stale
-        invalid/missing   -> unknown
+    <= 24 hours       -> fresh
+    <= 7 days         -> recent
+    <= 30 days        -> older
+    > 30 days         -> stale
+    invalid/missing   -> unknown
     """
 
     if not published_at:
@@ -369,59 +366,158 @@ def calculate_freshness(
             now - published_time
         ).total_seconds() / 3600
 
-        # Prevent negative ages if Yahoo's timestamp
-        # is slightly ahead of the current system time.
         age_hours = max(
             age_hours,
             0
         )
 
-        # ----------------------------------------------------
-        # Fresh
-        # ----------------------------------------------------
-
         if age_hours <= 24:
 
             freshness = "fresh"
-
-        # ----------------------------------------------------
-        # Recent
-        # ----------------------------------------------------
 
         elif age_hours <= 24 * 7:
 
             freshness = "recent"
 
-        # ----------------------------------------------------
-        # Older
-        # ----------------------------------------------------
-
         elif age_hours <= 24 * 30:
 
             freshness = "older"
-
-        # ----------------------------------------------------
-        # Stale
-        # ----------------------------------------------------
 
         else:
 
             freshness = "stale"
 
         return {
+
             "age_hours": round(
                 age_hours,
                 1
             ),
+
             "freshness": freshness
         }
 
     except Exception:
 
         return {
+
             "age_hours": None,
+
             "freshness": "unknown"
         }
+
+
+# ============================================================
+# GOOGLE NEWS RSS FETCH
+# ============================================================
+
+def fetch_google_news(
+    query: str,
+    count: int
+) -> list[dict[str, Any]]:
+    """
+    Fetch Google News search results through its RSS feed.
+
+    This does not require an API key.
+    """
+
+    rss_url = (
+        f"{GOOGLE_NEWS_RSS_URL}"
+        f"?q={quote_plus(query)}"
+        f"&hl=en-IN"
+        f"&gl=IN"
+        f"&ceid=IN:en"
+    )
+
+    print(
+        f"[NEWS COLLECTOR] "
+        f"Google News query={query}"
+    )
+
+    request = Request(
+        rss_url,
+        headers=GOOGLE_NEWS_HEADERS
+    )
+
+    with urlopen(
+        request,
+        timeout=15
+    ) as response:
+
+        xml_data = response.read()
+
+    root = ET.fromstring(
+        xml_data
+    )
+
+    articles = []
+
+    for item in root.findall(
+        ".//item"
+    ):
+
+        title = clean_text(
+            item.findtext(
+                "title",
+                default=""
+            )
+        )
+
+        link = clean_text(
+            item.findtext(
+                "link",
+                default=""
+            )
+        )
+
+        description = item.findtext(
+            "description",
+            default=""
+        )
+
+        description = strip_html(
+            description
+        )
+
+        published_at = clean_text(
+            item.findtext(
+                "pubDate",
+                default=""
+            )
+        )
+
+        source_element = item.find(
+            "source"
+        )
+
+        source = ""
+
+        if source_element is not None:
+
+            source = clean_text(
+                source_element.text
+            )
+
+        if not title:
+            continue
+
+        articles.append({
+
+            "title": title,
+
+            "url": link,
+
+            "source": source,
+
+            "published_at": published_at,
+
+            "summary": description
+        })
+
+        if len(articles) >= count:
+            break
+
+    return articles
 
 
 # ============================================================
@@ -429,100 +525,49 @@ def calculate_freshness(
 # ============================================================
 
 def extract_article(
-    item: Dict[str, Any],
+    item: dict[str, Any],
     symbol: str
-) -> Dict[str, Any] | None:
+) -> dict[str, Any] | None:
     """
-    Convert a Yahoo Finance news item into the
-    standardized QuantRisk AI article format.
+    Convert a Google News RSS item into the standardized
+    QuantRisk AI article format.
     """
 
-    if not isinstance(item, dict):
+    if not isinstance(
+        item,
+        dict
+    ):
 
         return None
 
-    # --------------------------------------------------------
-    # Yahoo Finance usually stores information under content.
-    # --------------------------------------------------------
-
-    content = item.get(
-        "content",
-        {}
-    )
-
-    if not isinstance(content, dict):
-
-        content = {}
-
-    # --------------------------------------------------------
-    # Title
-    # --------------------------------------------------------
-
     title = clean_text(
-        content.get("title")
-        or item.get("title")
+        item.get("title")
     )
 
     if not title:
-
         return None
 
-    # --------------------------------------------------------
-    # Summary
-    # --------------------------------------------------------
-
     summary = clean_text(
-        content.get("summary")
-        or content.get("description")
-        or item.get("summary")
-        or item.get("description")
+        item.get("summary")
     )
 
-    # --------------------------------------------------------
-    # URL
-    # --------------------------------------------------------
-
-    url = extract_url(
-        content
+    url = clean_text(
+        item.get("url")
     )
 
-    # If URL isn't in content, check item itself
-    if not url:
-
-        url = clean_text(
-            item.get("url")
-        )
-
-    # --------------------------------------------------------
-    # Source
-    # --------------------------------------------------------
-
-    source = extract_source(
-        content
+    source = clean_text(
+        item.get("source")
     )
 
-    # --------------------------------------------------------
-    # Publication time
-    # --------------------------------------------------------
-
-    published_at = extract_published_at(
-        item,
-        content
+    published_at = clean_text(
+        item.get("published_at")
     )
-
-    # --------------------------------------------------------
-    # Freshness
-    # --------------------------------------------------------
 
     freshness_info = calculate_freshness(
         published_at
     )
 
-    # --------------------------------------------------------
-    # Standardized article
-    # --------------------------------------------------------
-
-    article = {
+    return {
 
         "symbol": symbol,
 
@@ -545,8 +590,6 @@ def extract_article(
         ]
     }
 
-    return article
-
 
 # ============================================================
 # NEWS COLLECTION
@@ -559,22 +602,11 @@ def collect_news(
     """
     Collect recent financial news for a specific stock.
 
-    This function is intentionally NOT cached so that every
-    frontend request can retrieve the current Yahoo Finance
-    news response.
+    Primary source:
+        Google News RSS search
 
-    Parameters
-    ----------
-    symbol : str
-        Stock symbol such as RELIANCE.NS, TCS.NS, INFY.NS.
-
-    count : int
-        Maximum number of articles requested.
-
-    Returns
-    -------
-    dict
-        Standardized QuantRisk AI news response.
+    The returned structure is intentionally kept compatible
+    with the existing QuantRisk AI NLP pipeline.
     """
 
     # ========================================================
@@ -588,10 +620,17 @@ def collect_news(
     if not normalized_symbol:
 
         return {
+
             "status": "error",
-            "message": "Stock symbol is required.",
+
+            "message": (
+                "Stock symbol is required."
+            ),
+
             "symbol": "",
+
             "article_count": 0,
+
             "articles": []
         }
 
@@ -607,15 +646,10 @@ def collect_news(
 
         count = DEFAULT_COUNT
 
-    # Keep count within the supported range.
     count = max(
         MIN_COUNT,
         min(count, MAX_COUNT)
     )
-
-    # ========================================================
-    # DEBUG LOG
-    # ========================================================
 
     print(
         f"[NEWS COLLECTOR] "
@@ -624,180 +658,131 @@ def collect_news(
     )
 
     # ========================================================
-    # CREATE YAHOO TICKER
+    # SEARCH QUERIES
     # ========================================================
 
-    try:
-
-        ticker = yf.Ticker(
-            normalized_symbol
-        )
-
-    except Exception as error:
-
-        print(
-            f"[NEWS COLLECTOR ERROR] "
-            f"Ticker creation failed for "
-            f"{normalized_symbol}: {error}"
-        )
-
-        return {
-            "status": "error",
-            "message": (
-                f"Unable to initialize Yahoo Finance "
-                f"for {normalized_symbol}: {str(error)}"
-            ),
-            "symbol": normalized_symbol,
-            "article_count": 0,
-            "articles": []
-        }
-
-    # ========================================================
-    # FETCH NEWS
-    # ========================================================
-
-    try:
-
-        raw_news = ticker.get_news(
-            count=count
-        )
-
-    except Exception as error:
-
-        print(
-            f"[NEWS COLLECTOR ERROR] "
-            f"Yahoo Finance failed for "
-            f"{normalized_symbol}: {error}"
-        )
-
-        return {
-            "status": "error",
-            "message": (
-                f"Unable to collect news for "
-                f"{normalized_symbol}: {str(error)}"
-            ),
-            "symbol": normalized_symbol,
-            "article_count": 0,
-            "articles": []
-        }
-
-    # ========================================================
-    # HANDLE EMPTY RESPONSE
-    # ========================================================
-
-    if raw_news is None:
-
-        raw_news = []
-
-    if not isinstance(
-        raw_news,
-        list
-    ):
-
-        try:
-
-            raw_news = list(
-                raw_news
-            )
-
-        except Exception:
-
-            raw_news = []
-
-    print(
-        f"[NEWS COLLECTOR] "
-        f"{normalized_symbol}: "
-        f"Yahoo returned {len(raw_news)} raw articles"
+    queries = get_search_queries(
+        normalized_symbol
     )
 
+    if not queries:
+
+        return {
+
+            "status": "error",
+
+            "message": (
+                "Unable to build a news search query."
+            ),
+
+            "symbol": normalized_symbol,
+
+            "article_count": 0,
+
+            "articles": []
+        }
+
     # ========================================================
-    # PROCESS ARTICLES
+    # COLLECT ARTICLES
     # ========================================================
 
-    articles: List[Dict[str, Any]] = []
+    articles = []
 
-    # Used to prevent duplicate articles.
     seen_keys = set()
 
-    for item in raw_news:
+    for query in queries:
+
+        if len(articles) >= count:
+            break
 
         try:
 
-            article = extract_article(
-                item=item,
-                symbol=normalized_symbol
+            raw_articles = fetch_google_news(
+                query=query,
+                count=count
             )
 
-            if article is None:
-
-                continue
-
-            # ------------------------------------------------
-            # Duplicate detection
-            # ------------------------------------------------
-
-            url = article.get(
-                "url",
-                ""
-            )
-
-            title = article.get(
-                "title",
-                ""
-            )
-
-            if url:
-
-                duplicate_key = (
-                    "url",
-                    url.lower()
-                )
-
-            else:
-
-                duplicate_key = (
-                    "title",
-                    title.lower()
-                )
-
-            if duplicate_key in seen_keys:
-
-                continue
-
-            seen_keys.add(
-                duplicate_key
-            )
-
-            articles.append(
-                article
-            )
-
-        except Exception as article_error:
+        except Exception as error:
 
             print(
-                f"[NEWS ARTICLE ERROR] "
-                f"{normalized_symbol}: "
-                f"{article_error}"
+                f"[NEWS COLLECTOR ERROR] "
+                f"Google News failed for "
+                f"{normalized_symbol}, "
+                f"query={query}: {error}"
             )
 
-            # One bad article must not break the
-            # entire news request.
             continue
 
-    # ========================================================
-    # ENFORCE REQUESTED COUNT
-    # ========================================================
+        print(
+            f"[NEWS COLLECTOR] "
+            f"{normalized_symbol}: "
+            f"query returned "
+            f"{len(raw_articles)} articles"
+        )
 
-    # Yahoo Finance may return more records than requested
-    # depending on the provider/API response.
-    #
-    # We only expose the requested maximum to the frontend.
+        for item in raw_articles:
+
+            try:
+
+                article = extract_article(
+                    item=item,
+                    symbol=normalized_symbol
+                )
+
+                if article is None:
+                    continue
+
+                url = clean_text(
+                    article.get("url")
+                )
+
+                title = clean_text(
+                    article.get("title")
+                )
+
+                if url:
+
+                    duplicate_key = (
+                        "url",
+                        url.lower()
+                    )
+
+                else:
+
+                    duplicate_key = (
+                        "title",
+                        title.lower()
+                    )
+
+                if duplicate_key in seen_keys:
+                    continue
+
+                seen_keys.add(
+                    duplicate_key
+                )
+
+                articles.append(
+                    article
+                )
+
+                if len(articles) >= count:
+                    break
+
+            except Exception as article_error:
+
+                print(
+                    f"[NEWS ARTICLE ERROR] "
+                    f"{normalized_symbol}: "
+                    f"{article_error}"
+                )
+
+                continue
+
+    # ========================================================
+    # FINAL COUNT
+    # ========================================================
 
     articles = articles[:count]
-
-    # ========================================================
-    # FINAL LOG
-    # ========================================================
 
     print(
         f"[NEWS COLLECTOR] "
@@ -807,10 +792,31 @@ def collect_news(
     )
 
     # ========================================================
-    # FINAL RESPONSE
+    # RESPONSE
     # ========================================================
 
+    if not articles:
+
+        return {
+
+            "status": "error",
+
+            "message": (
+                f"No news articles were returned "
+                f"for {normalized_symbol}."
+            ),
+
+            "symbol": normalized_symbol,
+
+            "requested_article_count": count,
+
+            "article_count": 0,
+
+            "articles": []
+        }
+
     return {
+
         "status": "success",
 
         "symbol": normalized_symbol,

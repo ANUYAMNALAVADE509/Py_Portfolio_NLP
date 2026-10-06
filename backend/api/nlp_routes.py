@@ -2,17 +2,14 @@ from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from backend.nlp.pipeline import analyze_text, analyze_article
-
+from backend.news.collector import collect_news
+from backend.news.company_map import get_company_name
+from backend.nlp.pipeline import analyze_article, analyze_text
 from backend.nlp.portfolio import (
     calculate_company_summary,
     calculate_portfolio_summary,
-    get_top_articles
+    get_top_articles,
 )
-
-from backend.news.collector import collect_news
-from backend.news.company_map import get_company_name
-
 
 router = APIRouter()
 

@@ -1,12 +1,21 @@
 /* =========================================================
+   QUANTRISK AI
    NLP INTELLIGENCE PAGE
+   ========================================================= */
+
+
+/* =========================================================
+   PAGE
    ========================================================= */
 
 .nlp-page {
   width: 100%;
   min-height: calc(100vh - 70px);
+
   box-sizing: border-box;
+
   padding: 42px 48px 60px;
+
   color: #14213d;
 }
 
@@ -19,7 +28,9 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+
   gap: 32px;
+
   margin-bottom: 32px;
 }
 
@@ -29,28 +40,39 @@
 
 .page-kicker {
   display: block;
+
   margin-bottom: 10px;
+
   font-size: 14px;
   line-height: 1.5;
   font-weight: 800;
+
   letter-spacing: 1.7px;
+
   color: #53709d;
 }
 
 .nlp-page-header h1 {
   margin: 0;
+
   font-size: clamp(36px, 3.2vw, 48px);
   line-height: 1.15;
+
   font-weight: 800;
+
   color: #101c33;
+
   letter-spacing: -0.5px;
 }
 
 .nlp-page-header p {
-  margin: 14px 0 0;
   max-width: 900px;
+
+  margin: 14px 0 0;
+
   font-size: 18px;
   line-height: 1.7;
+
   color: #62708a;
 }
 
@@ -64,12 +86,17 @@
 .primary-button {
   border: none;
   border-radius: 9px;
+
   background: #2868e8;
   color: #ffffff;
+
+  font-family: inherit;
   font-size: 15px;
   line-height: 1.3;
   font-weight: 750;
+
   padding: 13px 21px;
+
   cursor: pointer;
 
   transition:
@@ -83,7 +110,9 @@
 .apply-button:hover,
 .primary-button:hover {
   transform: translateY(-1px);
-  box-shadow: 0 7px 18px rgba(40, 104, 232, 0.22);
+
+  box-shadow:
+    0 7px 18px rgba(40, 104, 232, 0.22);
 }
 
 .refresh-button:active,
@@ -96,14 +125,66 @@
 .apply-button:disabled,
 .primary-button:disabled {
   opacity: 0.65;
+
   cursor: wait;
+
   transform: none;
+
   box-shadow: none;
 }
 
-.refresh-button:focus-visible,
-.apply-button:focus-visible,
-.primary-button:focus-visible {
+
+/* Secondary button used by error screen */
+
+.secondary-button {
+  border: 1px solid #cbd5e3;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #34445d;
+
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 750;
+
+  padding: 13px 21px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-1px);
+
+  border-color: #aebbd0;
+
+  background: #f8fafd;
+
+  box-shadow:
+    0 7px 18px rgba(30, 55, 90, 0.08);
+}
+
+.secondary-button:active {
+  transform: translateY(0);
+}
+
+
+/* Scoped keyboard focus */
+
+.nlp-page
+  .refresh-button:focus-visible,
+.nlp-page
+  .apply-button:focus-visible,
+.nlp-page
+  .primary-button:focus-visible,
+.nlp-page
+  .secondary-button:focus-visible {
   outline: 3px solid rgba(40, 104, 232, 0.22);
   outline-offset: 2px;
 }
@@ -115,17 +196,25 @@
 
 .nlp-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 210px;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    210px;
+
   gap: 24px;
 
   padding: 24px;
+
   margin-bottom: 16px;
 
   background: #ffffff;
+
   border: 1px solid #dce3ee;
+
   border-radius: 12px;
 
-  box-shadow: 0 5px 18px rgba(30, 55, 90, 0.06);
+  box-shadow:
+    0 5px 18px rgba(30, 55, 90, 0.06);
 }
 
 .control-group {
@@ -134,28 +223,35 @@
 
 .control-group label {
   display: block;
+
   margin-bottom: 10px;
 
   font-size: 15px;
   line-height: 1.4;
+
   font-weight: 800;
+
   color: #33445f;
 }
 
 .control-group input {
   width: 100%;
   min-height: 48px;
+
   box-sizing: border-box;
 
   padding: 12px 15px;
 
   border: 1px solid #cbd5e3;
+
   border-radius: 8px;
 
   outline: none;
 
   background: #ffffff;
   color: #17243d;
+
+  font-family: inherit;
 
   font-size: 16px;
   line-height: 1.4;
@@ -171,7 +267,9 @@
 
 .control-group input:focus {
   border-color: #2868e8;
-  box-shadow: 0 0 0 3px rgba(40, 104, 232, 0.1);
+
+  box-shadow:
+    0 0 0 3px rgba(40, 104, 232, 0.1);
 }
 
 .control-group input:focus-visible {
@@ -180,7 +278,11 @@
 
 .symbol-input-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
   gap: 10px;
 }
 
@@ -189,38 +291,54 @@
   min-height: 48px;
 }
 
-.article-count-control {
+.small-control {
   min-width: 0;
 }
 
 
 /* =========================================================
-   MONITORING BAR
+   MONITORING STRIP
+   IMPORTANT:
+   JSX uses "monitoring-strip", not "monitoring-bar".
    ========================================================= */
 
-.monitoring-bar {
+.monitoring-strip {
   display: flex;
+
   flex-wrap: wrap;
+
   align-items: center;
+
   gap: 26px;
 
   padding: 14px 18px;
+
   margin-bottom: 24px;
 
   border: 1px solid #d8e5fa;
+
   border-radius: 8px;
 
   background: #eaf2ff;
+
   color: #526987;
 
   font-size: 14px;
   line-height: 1.6;
 }
 
-.monitoring-bar strong {
+.monitoring-strip strong {
   margin-left: 5px;
+
   color: #2868e8;
+
   font-weight: 800;
+}
+
+.refresh-status {
+  color: #2868e8;
+
+  font-weight: 750;
 }
 
 
@@ -229,17 +347,55 @@
    ========================================================= */
 
 .inline-error {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  align-items: center;
+
+  gap: 8px;
+
   padding: 16px 19px;
+
   margin-bottom: 22px;
 
   border: 1px solid #f0b9b9;
+
   border-radius: 9px;
 
   background: #fff3f3;
+
   color: #a52a2a;
 
   font-size: 15px;
   line-height: 1.6;
+}
+
+.inline-error button {
+  margin-left: auto;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #2868e8;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.inline-error button:hover {
+  text-decoration: underline;
+}
+
+.inline-error button:focus-visible {
+  outline: 2px solid #2868e8;
+  outline-offset: 3px;
 }
 
 
@@ -249,10 +405,12 @@
 
 .metrics-grid {
   display: grid;
+
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
 
   gap: 20px;
+
   margin-bottom: 22px;
 }
 
@@ -261,13 +419,17 @@
   min-height: 145px;
 
   box-sizing: border-box;
+
   padding: 24px;
 
   background: #ffffff;
+
   border: 1px solid #dce3ee;
+
   border-radius: 12px;
 
-  box-shadow: 0 5px 18px rgba(30, 55, 90, 0.06);
+  box-shadow:
+    0 5px 18px rgba(30, 55, 90, 0.06);
 
   transition:
     transform 0.15s ease,
@@ -276,17 +438,23 @@
 
 .metric-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 9px 25px rgba(30, 55, 90, 0.09);
+
+  box-shadow:
+    0 9px 25px rgba(30, 55, 90, 0.09);
 }
 
 .metric-label {
   display: block;
+
   margin-bottom: 10px;
 
   font-size: 14px;
   line-height: 1.45;
+
   font-weight: 800;
+
   letter-spacing: 0.8px;
+
   text-transform: uppercase;
 
   color: #63728a;
@@ -294,10 +462,12 @@
 
 .metric-value {
   display: block;
+
   margin-bottom: 8px;
 
   font-size: 30px;
   line-height: 1.2;
+
   font-weight: 800;
 
   color: #17243d;
@@ -321,10 +491,12 @@
 
 .nlp-two-column {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
 
   gap: 20px;
+
   margin-bottom: 22px;
 }
 
@@ -338,17 +510,22 @@
    ========================================================= */
 
 .nlp-panel {
-  box-sizing: border-box;
   width: 100%;
 
+  box-sizing: border-box;
+
   padding: 27px;
+
   margin-bottom: 22px;
 
   background: #ffffff;
+
   border: 1px solid #dce3ee;
+
   border-radius: 12px;
 
-  box-shadow: 0 5px 18px rgba(30, 55, 90, 0.06);
+  box-shadow:
+    0 5px 18px rgba(30, 55, 90, 0.06);
 }
 
 .section-header {
@@ -360,6 +537,7 @@
 
   font-size: 22px;
   line-height: 1.35;
+
   font-weight: 800;
 
   color: #16233c;
@@ -386,17 +564,20 @@
 
 .sentiment-bar {
   display: flex;
+
   overflow: hidden;
 
   width: 100%;
   height: 25px;
 
   border-radius: 999px;
+
   background: #edf1f6;
 }
 
 .sentiment-segment {
   height: 100%;
+
   min-width: 2px;
 
   transition: width 0.35s ease;
@@ -419,16 +600,20 @@
 
 .chart-legend {
   display: grid;
+
   grid-template-columns:
     repeat(3, minmax(0, 1fr));
 
   gap: 20px;
+
   margin-top: 20px;
 }
 
 .chart-legend > div {
   display: flex;
+
   align-items: center;
+
   gap: 9px;
 
   min-width: 0;
@@ -443,6 +628,7 @@
   margin-left: auto;
 
   color: #18243b;
+
   font-size: 16px;
   font-weight: 800;
 }
@@ -463,13 +649,17 @@
 
 .freshness-list {
   display: flex;
+
   flex-direction: column;
+
   gap: 13px;
 }
 
 .freshness-row {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
 
   gap: 18px;
@@ -477,6 +667,7 @@
   padding: 16px 18px;
 
   border: 1px solid #e1e6ef;
+
   border-radius: 9px;
 
   background: #f8fafd;
@@ -489,6 +680,7 @@
 
 .freshness-row strong {
   color: #17243d;
+
   font-size: 17px;
   font-weight: 800;
 }
@@ -500,6 +692,7 @@
 
 .badge {
   display: inline-flex;
+
   align-items: center;
   justify-content: center;
 
@@ -511,10 +704,14 @@
 
   font-size: 12px;
   line-height: 1.3;
+
   font-weight: 800;
 
   white-space: nowrap;
 }
+
+
+/* Sentiment */
 
 .sentiment-badge.positive {
   background: #e6f7ee;
@@ -535,6 +732,9 @@
   background: #f0f2f5;
   color: #69758a;
 }
+
+
+/* Risk */
 
 .risk-badge.low {
   background: #e6f7ee;
@@ -558,11 +758,12 @@
 
 
 /* =========================================================
-   COMPANY TABLE
+   COMPANY RISK TABLE
    ========================================================= */
 
 .table-wrapper {
   width: 100%;
+
   overflow-x: auto;
 
   border-radius: 9px;
@@ -570,6 +771,7 @@
 
 .company-risk-table {
   width: 100%;
+
   min-width: 760px;
 
   border-collapse: collapse;
@@ -583,10 +785,12 @@
   border-bottom: 2px solid #dfe5ee;
 
   background: #f7f9fc;
+
   color: #596b85;
 
   font-size: 14px;
   line-height: 1.45;
+
   font-weight: 800;
 }
 
@@ -616,6 +820,7 @@
 
   font-size: 16px;
   line-height: 1.4;
+
   font-weight: 800;
 
   color: #17243d;
@@ -624,6 +829,7 @@
 .company-risk-table small {
   font-size: 13px;
   line-height: 1.4;
+
   color: #75839a;
 }
 
@@ -634,6 +840,7 @@
 
 .article-grid {
   display: grid;
+
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
 
@@ -650,6 +857,7 @@
   padding: 22px;
 
   border: 1px solid #dfe5ee;
+
   border-radius: 10px;
 
   background: #fbfcfe;
@@ -665,12 +873,15 @@
 
   border-color: #cfd9e8;
 
-  box-shadow: 0 8px 20px rgba(30, 55, 90, 0.07);
+  box-shadow:
+    0 8px 20px rgba(30, 55, 90, 0.07);
 }
 
 .article-top-row {
   display: flex;
+
   justify-content: space-between;
+
   align-items: flex-start;
 
   gap: 16px;
@@ -683,6 +894,7 @@
 
   font-size: 14px;
   line-height: 1.45;
+
   font-weight: 800;
 
   color: #687993;
@@ -690,6 +902,7 @@
 
 .article-badges {
   display: flex;
+
   flex-wrap: wrap;
 
   gap: 7px;
@@ -702,6 +915,7 @@
 
   font-size: 18px;
   line-height: 1.5;
+
   font-weight: 800;
 
   color: #16243d;
@@ -718,7 +932,9 @@
 
 .article-bottom-row {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
   gap: 15px;
@@ -732,12 +948,14 @@
 .article-date {
   font-size: 13px;
   line-height: 1.45;
+
   color: #7a879a;
 }
 
 .article-link {
   font-size: 14px;
   line-height: 1.4;
+
   font-weight: 800;
 
   color: #2868e8;
@@ -756,7 +974,7 @@
 
 
 /* =========================================================
-   WARNINGS
+   COLLECTION WARNINGS
    ========================================================= */
 
 .warning-panel {
@@ -765,6 +983,7 @@
 
 .warning-list {
   display: flex;
+
   flex-direction: column;
 
   gap: 11px;
@@ -772,6 +991,7 @@
 
 .warning-item {
   display: flex;
+
   flex-wrap: wrap;
 
   gap: 10px;
@@ -794,7 +1014,7 @@
 
 
 /* =========================================================
-   PIPELINE
+   NLP PIPELINE
    ========================================================= */
 
 .pipeline {
@@ -816,6 +1036,7 @@
 
 .pipeline-step {
   min-width: 0;
+
   min-height: 155px;
 
   box-sizing: border-box;
@@ -823,6 +1044,7 @@
   padding: 21px;
 
   border: 1px solid #dfe5ee;
+
   border-radius: 10px;
 
   background: #f9fbfd;
@@ -835,6 +1057,7 @@
 
   font-size: 12px;
   line-height: 1.4;
+
   font-weight: 900;
 
   color: #2868e8;
@@ -847,6 +1070,7 @@
 
   font-size: 16px;
   line-height: 1.45;
+
   font-weight: 800;
 
   color: #1a2943;
@@ -877,7 +1101,9 @@
 
 .empty-state {
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   min-height: 125px;
@@ -887,6 +1113,7 @@
   box-sizing: border-box;
 
   border: 1px dashed #d7deea;
+
   border-radius: 9px;
 
   background: #f7f9fc;
@@ -907,16 +1134,18 @@
 
 
 /* =========================================================
-   LOADING PAGE
+   INITIAL LOADING
    ========================================================= */
 
 .nlp-loading {
   min-height: 55vh;
 
   display: flex;
+
   flex-direction: column;
 
   align-items: center;
+
   justify-content: center;
 
   text-align: center;
@@ -942,6 +1171,16 @@
   color: #6e7d94;
 }
 
+.loading-endpoint {
+  display: block;
+
+  margin-top: 10px;
+
+  color: #8794a8;
+
+  font-size: 13px;
+}
+
 
 /* =========================================================
    LOADING SPINNER
@@ -952,11 +1191,13 @@
   height: 44px;
 
   border: 4px solid #dce5f5;
+
   border-top-color: #2868e8;
 
   border-radius: 50%;
 
-  animation: nlp-spin 0.8s linear infinite;
+  animation:
+    nlp-spin 0.8s linear infinite;
 }
 
 @keyframes nlp-spin {
@@ -968,7 +1209,6 @@
 
 /* =========================================================
    REFRESH OVERLAY
-   Used by NLPIntelligence.jsx while refreshing data
    ========================================================= */
 
 .refresh-overlay {
@@ -994,6 +1234,8 @@
 
   gap: 14px;
 
+  width: auto;
+
   max-width: calc(100vw - 32px);
 
   margin-top: 20px;
@@ -1003,11 +1245,13 @@
   box-sizing: border-box;
 
   border: 1px solid #dce3ee;
+
   border-radius: 12px;
 
   background: rgba(255, 255, 255, 0.97);
 
-  box-shadow: 0 10px 32px rgba(20, 33, 61, 0.15);
+  box-shadow:
+    0 10px 32px rgba(20, 33, 61, 0.15);
 
   backdrop-filter: blur(8px);
 }
@@ -1048,14 +1292,17 @@
 
 .nlp-error {
   max-width: 720px;
+
   min-height: 55vh;
 
   margin: 0 auto;
 
   display: flex;
+
   flex-direction: column;
 
   align-items: center;
+
   justify-content: center;
 
   text-align: center;
@@ -1075,9 +1322,11 @@
   border-radius: 50%;
 
   background: #fdeaea;
+
   color: #bd4141;
 
   font-size: 27px;
+
   font-weight: 900;
 }
 
@@ -1090,7 +1339,7 @@
   color: #17243d;
 }
 
-.nlp-error > p {
+.error-message {
   max-width: 650px;
 
   margin: 0 0 20px;
@@ -1103,11 +1352,13 @@
 
 .error-help {
   display: flex;
+
   flex-direction: column;
 
   gap: 8px;
 
   width: 100%;
+
   max-width: 650px;
 
   margin-bottom: 22px;
@@ -1141,6 +1392,25 @@
 
 
 /* =========================================================
+   ERROR ACTION BUTTONS
+   ========================================================= */
+
+.error-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
    FOOTER
    ========================================================= */
 
@@ -1148,6 +1418,7 @@
   display: flex;
 
   justify-content: space-between;
+
   align-items: center;
 
   flex-wrap: wrap;
@@ -1177,24 +1448,26 @@
 
 
 /* =========================================================
-   GENERAL ACCESSIBILITY
+   NLP-SCOPED ACCESSIBILITY
    ========================================================= */
 
-button:focus-visible,
-input:focus-visible,
-a:focus-visible {
+.nlp-page
+  input:focus-visible,
+.nlp-page
+  a:focus-visible {
   outline: 3px solid rgba(40, 104, 232, 0.25);
+
   outline-offset: 2px;
 }
 
 
 /* =========================================================
-   RESPONSIVE DESIGN
+   RESPONSIVE
    ========================================================= */
 
 
 /* ---------------------------------------------------------
-   LARGE TABLETS / SMALL DESKTOPS
+   LARGE TABLETS / SMALL DESKTOP
    --------------------------------------------------------- */
 
 @media (max-width: 1200px) {
@@ -1246,7 +1519,8 @@ a:focus-visible {
   }
 
   .nlp-controls {
-    grid-template-columns: 1fr 190px;
+    grid-template-columns:
+      1fr 190px;
   }
 
   .nlp-two-column {
@@ -1275,6 +1549,7 @@ a:focus-visible {
 
   .nlp-page-header {
     flex-direction: column;
+
     align-items: stretch;
   }
 
@@ -1292,6 +1567,7 @@ a:focus-visible {
 
   .nlp-controls {
     grid-template-columns: 1fr;
+
     gap: 20px;
 
     padding: 21px;
@@ -1343,11 +1619,13 @@ a:focus-visible {
 
   .page-kicker {
     font-size: 12px;
+
     letter-spacing: 1.4px;
   }
 
   .nlp-page-header h1 {
     font-size: 31px;
+
     line-height: 1.2;
   }
 
@@ -1355,6 +1633,7 @@ a:focus-visible {
     margin-top: 11px;
 
     font-size: 15px;
+
     line-height: 1.6;
   }
 
@@ -1364,11 +1643,13 @@ a:focus-visible {
 
   .metrics-grid {
     grid-template-columns: 1fr;
+
     gap: 14px;
   }
 
   .metric-card {
     min-height: 125px;
+
     padding: 20px;
   }
 
@@ -1378,6 +1659,7 @@ a:focus-visible {
 
   .nlp-panel {
     padding: 20px;
+
     margin-bottom: 17px;
   }
 
@@ -1401,8 +1683,9 @@ a:focus-visible {
     width: 100%;
   }
 
-  .monitoring-bar {
+  .monitoring-strip {
     align-items: flex-start;
+
     flex-direction: column;
 
     gap: 8px;
@@ -1428,17 +1711,29 @@ a:focus-visible {
 
   .article-bottom-row {
     flex-direction: column;
+
     align-items: flex-start;
   }
 
   .freshness-row {
     align-items: flex-start;
+
     flex-direction: column;
+
     gap: 8px;
+  }
+
+  .error-actions {
+    flex-direction: column;
+  }
+
+  .error-actions button {
+    width: 100%;
   }
 
   .nlp-footer {
     flex-direction: column;
+
     align-items: flex-start;
   }
 
@@ -1468,6 +1763,7 @@ a:focus-visible {
 
   .nlp-page {
     padding-left: 12px;
+
     padding-right: 12px;
   }
 
@@ -1491,7 +1787,7 @@ a:focus-visible {
 
 
 /* =========================================================
-   REDUCED MOTION ACCESSIBILITY
+   REDUCED MOTION
    ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1505,6 +1801,7 @@ a:focus-visible {
   .refresh-button,
   .apply-button,
   .primary-button,
+  .secondary-button,
   .sentiment-segment {
     transition: none;
   }

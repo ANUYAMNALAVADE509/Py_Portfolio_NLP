@@ -1,18 +1,15 @@
 from transformers import pipeline
 
-from backend.nlp.intelligence import (
-    detect_risk_terms,
-    detect_risk_context,
-    detect_topic
-)
-
-from backend.nlp.relevance import classify_relevance
-from backend.nlp.ner import extract_entities
-
 from backend.nlp.events import detect_event
 from backend.nlp.impact import assess_impact
 from backend.nlp.insight import generate_insight
-
+from backend.nlp.intelligence import (
+    detect_risk_context,
+    detect_risk_terms,
+    detect_topic,
+)
+from backend.nlp.ner import extract_entities
+from backend.nlp.relevance import classify_relevance
 
 # ============================================================
 # LOAD FINBERT ONCE
@@ -150,7 +147,7 @@ def analyze_text(text: str):
 
             "message": (
                 f"Sentiment analysis failed: "
-                f"{str(error)}"
+                f"{error!s}"
             ),
 
             "sentiment": "unknown",
